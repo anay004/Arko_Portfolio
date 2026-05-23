@@ -1,0 +1,2511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arka Deb Nath</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#050816;
+      --bg-2:#07111F;
+      --bg-3:#0A192F;
+      --card:rgba(8, 16, 34, .62);
+      --card-2:rgba(10, 20, 40, .82);
+      --line:rgba(96, 165, 250, .20);
+      --line-2:rgba(56, 189, 248, .28);
+      --blue:#2563EB;
+      --cyan:#38BDF8;
+      --glow:#60A5FA;
+      --text:#F8FAFC;
+      --muted:#94A3B8;
+      --shadow: 0 18px 60px rgba(0,0,0,.45);
+      --radius: 24px;
+      --radius-sm: 18px;
+      --sidebar-w: 290px;
+      --top-gap: 24px;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 20% 15%, rgba(37,99,235,.12), transparent 55%),
+        radial-gradient(900px 540px at 85% 20%, rgba(56,189,248,.10), transparent 48%),
+        linear-gradient(135deg, var(--bg) 0%, var(--bg-2) 45%, var(--bg-3) 100%);
+      overflow-x:hidden;
+    }
+
+    body::before,
+    body::after{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:0;
+    }
+
+    /* Blueprint grid */
+    body::before{
+      background-image:
+        linear-gradient(rgba(96,165,250,.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(96,165,250,.07) 1px, transparent 1px);
+      background-size: 72px 72px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,.95), rgba(0,0,0,.15));
+      opacity:.25;
+    }
+
+    /* Soft moving glow */
+    body::after{
+      background:
+        radial-gradient(circle at 18% 18%, rgba(56,189,248,.12), transparent 18%),
+        radial-gradient(circle at 72% 28%, rgba(37,99,235,.16), transparent 20%),
+        radial-gradient(circle at 54% 74%, rgba(96,165,250,.10), transparent 22%);
+      filter: blur(14px);
+      animation: ambientShift 12s ease-in-out infinite alternate;
+      opacity:.55;
+    }
+
+    @keyframes ambientShift{
+      0%{transform:translate3d(0,0,0) scale(1)}
+      100%{transform:translate3d(0,-12px,0) scale(1.03)}
+    }
+
+    .app{
+      position:relative;
+      z-index:1;
+      min-height:100vh;
+      display:flex;
+    }
+
+    /* Sidebar drawer */
+    .sidebar{
+      position:fixed;
+      left:18px;
+      top:18px;
+      bottom:18px;
+      width:var(--sidebar-w);
+      padding:16px 14px;
+      border:1px solid rgba(96,165,250,.16);
+      border-radius:28px;
+      background:linear-gradient(180deg, rgba(7,17,31,.88), rgba(7,17,31,.60));
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+      overflow:hidden;
+    }
+
+    .sidebar::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      border-radius:inherit;
+      padding:1px;
+      background:linear-gradient(135deg, rgba(56,189,248,.55), rgba(37,99,235,.14), rgba(56,189,248,.28));
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events:none;
+      opacity:.6;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:4px 4px 8px;
+    }
+
+    .brand-badge{
+      width:48px;
+      height:48px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      font-family:"Space Grotesk",sans-serif;
+      font-weight:700;
+      letter-spacing:.08em;
+      color:var(--cyan);
+      background:linear-gradient(180deg, rgba(37,99,235,.22), rgba(8,16,34,.20));
+      border:1px solid rgba(96,165,250,.22);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 0 24px rgba(56,189,248,.12);
+    }
+
+    .brand-close{
+      width:40px;
+      height:40px;
+      border-radius:14px;
+      display:grid;
+      place-items:center;
+      border:1px solid rgba(96,165,250,.14);
+      color:var(--muted);
+      background:rgba(255,255,255,.02);
+      cursor:pointer;
+      transition:transform .25s ease, background .25s ease, color .25s ease, border-color .25s ease;
+    }
+    .brand-close:hover{transform:translateY(-1px); background:rgba(56,189,248,.08); color:var(--text); border-color:rgba(56,189,248,.35)}
+
+    .nav{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      padding:8px 0 0;
+    }
+
+    .nav button{
+      appearance:none;
+      border:none;
+      width:100%;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:13px 14px;
+      border-radius:16px;
+      color:#D9E8FF;
+      background:transparent;
+      cursor:pointer;
+      transition:transform .25s ease, background .25s ease, box-shadow .25s ease, color .25s ease;
+      text-align:left;
+      font:600 14px/1.1 Inter, sans-serif;
+      border:1px solid transparent;
+    }
+    .nav button svg{width:18px;height:18px;opacity:.95;flex:none}
+    .nav button:hover{
+      transform:translateX(5px);
+      background:rgba(56,189,248,.08);
+      border-color:rgba(56,189,248,.18);
+      box-shadow:0 0 0 1px rgba(56,189,248,.08), 0 8px 24px rgba(37,99,235,.12);
+    }
+    .nav button.active{
+      color:var(--text);
+      background:linear-gradient(90deg, rgba(37,99,235,.28), rgba(56,189,248,.12));
+      border-color:rgba(56,189,248,.28);
+      box-shadow:0 0 0 1px rgba(56,189,248,.12), 0 10px 24px rgba(56,189,248,.10);
+    }
+
+    .resume-card{
+      margin-top:auto;
+      padding:14px;
+      border-radius:20px;
+      border:1px solid rgba(96,165,250,.18);
+      background:linear-gradient(180deg, rgba(10,25,47,.62), rgba(8,16,34,.44));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+    }
+
+    .resume-card p{margin:0 0 10px; color:var(--muted); font-size:13px; line-height:1.55}
+    .resume-btn{
+      width:100%;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      border:none;
+      border-radius:16px;
+      padding:12px 14px;
+      color:var(--text);
+      cursor:pointer;
+      font:600 14px/1 Inter, sans-serif;
+      background:linear-gradient(135deg, rgba(37,99,235,.9), rgba(56,189,248,.65));
+      box-shadow:0 14px 30px rgba(37,99,235,.18), 0 0 0 1px rgba(255,255,255,.06) inset;
+      transition:transform .25s ease, box-shadow .25s ease;
+      text-decoration:none;
+    }
+    .resume-btn:hover{transform:translateY(-2px); box-shadow:0 18px 38px rgba(37,99,235,.25), 0 0 28px rgba(56,189,248,.14)}
+
+    /* Content shell */
+    .content{
+      width:100%;
+      padding:18px 18px 18px calc(var(--sidebar-w) + 36px);
+    }
+
+    .panel{
+      display:none;
+      min-height:calc(100vh - 36px);
+      animation: panelIn .55s ease both;
+    }
+
+    .panel.active{display:block}
+
+    @keyframes panelIn{
+      from{opacity:0; transform:translateY(14px) scale(.99)}
+      to{opacity:1; transform:translateY(0) scale(1)}
+    }
+
+    /* Hero layout */
+    /* HOME HERO SINGLE SCREEN */
+    .hero-single{
+      position:relative;
+      min-height:calc(100vh - 36px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      padding:40px;
+      isolation:isolate;
+    }
+
+    .hero-main-content{
+      position:relative;
+      width:100%;
+      display:grid;
+      grid-template-columns:minmax(420px, 1fr) minmax(420px, .9fr);
+      align-items:center;
+      gap:40px;
+      z-index:3;
+    }
+
+    .hero-text-content{
+      position:relative;
+      max-width:620px;
+      z-index:6;
+      padding-right:10px;
+    }
+
+    .hero-image-zone{
+      position:relative;
+      min-height:650px;
+      display:flex;
+      align-items:flex-end;
+      justify-content:center;
+      z-index:4;
+    }
+
+    .portrait-cutout-wrap{
+      position:relative;
+      width:100%;
+      max-width:460px;
+      min-height:500px;
+      display:flex;
+      align-items:flex-end;
+      justify-content:center;
+      z-index:5;
+    }
+
+    /* base futuristic platform */
+    .portrait-cutout-wrap::before{
+      content:"";
+      position:absolute;
+      bottom:0;
+      width:100%;
+      height:420px;
+      border-radius:40px;
+      background:
+        linear-gradient(180deg, rgba(12,25,45,.25), rgba(6,12,24,.88)),
+        radial-gradient(circle at top, rgba(56,189,248,.10), transparent 70%);
+      border:1px solid rgba(96,165,250,.18);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.05),
+        0 24px 70px rgba(0,0,0,.45),
+        0 0 30px rgba(56,189,248,.08);
+      backdrop-filter:blur(16px);
+      z-index:1;
+    }
+
+    .portrait-cutout-wrap::after{
+      content:"";
+      position:absolute;
+      bottom:40px;
+      width:72%;
+      height:72%;
+      border-radius:50%;
+      border:1px solid rgba(56,189,248,.16);
+      box-shadow:0 0 30px rgba(56,189,248,.10);
+      z-index:1;
+    }
+
+    .portrait-cutout-wrap img{
+      position:absolute;
+      bottom:0;
+      z-index:5;
+      width:82%;
+      max-width:390px;
+      height:auto;
+      object-fit:contain;
+      filter:drop-shadow(0 0 22px rgba(56,189,248,.16)) drop-shadow(0 26px 55px rgba(0,0,0,.65));
+      /* fixed profile image position */
+      pointer-events:none;
+    }
+
+    /* PROFILE IMAGE SIZE CONTROL
+DESKTOP → width:82%; max-width:390px;
+TABLET → width:78%; max-width:320px;
+MOBILE → width:76%; max-width:240px;
+Edit these values to resize the image manually.
+*/
+      to{transform:translateY(-18px)}
+    }
+
+    .hero-image-glow{
+      position:absolute;
+      width:360px;
+      height:360px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(56,189,248,.26), rgba(37,99,235,.10), transparent 72%);
+      filter:blur(24px);
+      bottom:110px;
+      animation:energyPulse 5s ease-in-out infinite alternate;
+      z-index:0;
+    }
+
+    @keyframes energyPulse{
+      from{transform:scale(1);opacity:.8}
+      to{transform:scale(1.1);opacity:1}
+    }
+
+    /* ELECTRICAL CIRCUIT BACKGROUND */
+    .hero-circuit-bg{
+      position:absolute;
+      inset:0;
+      overflow:hidden;
+      z-index:1;
+      pointer-events:none;
+    }
+
+    .circuit-line{
+      position:absolute;
+      background:linear-gradient(to right, transparent, rgba(56,189,248,.8), transparent);
+      height:2px;
+      box-shadow:0 0 18px rgba(56,189,248,.4);
+      animation:lineMove 6s linear infinite;
+    }
+
+    .line1{
+      width:320px;
+      top:28%;
+      left:12%;
+    }
+
+    .line2{
+      width:240px;
+      top:58%;
+      right:14%;
+      animation-delay:2s;
+    }
+
+    .line3{
+      width:180px;
+      bottom:24%;
+      left:42%;
+      animation-delay:4s;
+    }
+
+    @keyframes lineMove{
+      0%{opacity:.3;transform:translateX(-20px)}
+      50%{opacity:1}
+      100%{opacity:.3;transform:translateX(20px)}
+    }
+
+    .circuit-dot{
+      position:absolute;
+      width:12px;
+      height:12px;
+      border-radius:50%;
+      background:#38BDF8;
+      box-shadow:0 0 22px rgba(56,189,248,.9);
+      animation:circuitPulse 2s ease-in-out infinite;
+    }
+
+    .dot1{top:27%;left:30%}
+    .dot2{top:57%;right:26%}
+    .dot3{bottom:23%;left:54%}
+
+    @keyframes circuitPulse{
+      50%{transform:scale(1.6);opacity:.6}
+    }
+
+    .electric-wave{
+      position:absolute;
+      width:120%;
+      height:120%;
+      inset:-10%;
+      background:radial-gradient(circle at center, rgba(56,189,248,.08), transparent 60%);
+      animation:waveRotate 18s linear infinite;
+    }
+
+    @keyframes waveRotate{
+      from{transform:rotate(0deg)}
+      to{transform:rotate(360deg)}
+    }
+
+    .hero-mini-tags{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:26px;
+    }
+
+    .hero-mini-tags span{
+      padding:12px 16px;
+      border-radius:999px;
+      border:1px solid rgba(56,189,248,.18);
+      background:rgba(255,255,255,.03);
+      color:#DDEEFF;
+      font-size:13px;
+      font-weight:700;
+      backdrop-filter:blur(10px);
+    }
+    .info-card{
+      padding:22px;
+      border-radius:26px;
+      background:linear-gradient(180deg, rgba(10,25,47,.56), rgba(8,16,34,.48));
+      border:1px solid rgba(96,165,250,.14);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+      position:relative;
+      overflow:hidden;
+      transform:translateY(0);
+      transition:transform .28s ease, border-color .28s ease, box-shadow .28s ease;
+    }
+    .info-card:hover{
+      transform:translateY(-3px);
+      border-color:rgba(56,189,248,.25);
+      box-shadow:0 18px 40px rgba(0,0,0,.22), 0 0 24px rgba(56,189,248,.08);
+    }
+    .info-card .label{
+      color:#7FB9FF;
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      font-weight:700;
+      margin-bottom:10px;
+    }
+    .info-card h3{
+      margin:0;
+      font-family:"Space Grotesk",sans-serif;
+      font-size:1.2rem;
+      letter-spacing:-.03em;
+    }
+    .info-card p{
+      margin:10px 0 0;
+      color:var(--muted);
+      line-height:1.65;
+      font-size:14px;
+    }
+    .stat-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:14px;
+    }
+    .stat{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:9px 12px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:700;
+      color:#E8F2FF;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(96,165,250,.14);
+    }
+    .stat svg{width:15px;height:15px;color:var(--cyan)}
+
+    /* module systems */
+    .module-grid{
+      display:flex;
+      flex-direction:column;
+      gap:24px;
+      min-height:calc(100vh - 36px);
+    }
+
+    .module-header{
+      padding:30px;
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:20px;
+    }
+
+    .module-header h2{
+      margin:10px 0 0;
+      font-family:"Space Grotesk",sans-serif;
+      font-size:clamp(2rem,4vw,3.5rem);
+      letter-spacing:-.04em;
+    }
+
+    .module-header p{
+      max-width:480px;
+      color:var(--muted);
+      line-height:1.8;
+      margin:0;
+    }
+
+    .section-tag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 14px;
+      border-radius:999px;
+      background:rgba(56,189,248,.08);
+      border:1px solid rgba(56,189,248,.16);
+      color:#DCEFFF;
+      font-size:12px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      font-weight:700;
+    }
+
+    .about-grid,
+    .skills-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:20px;
+    }
+
+    .about-card,
+    .skill-card{
+      padding:28px;
+      transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+    }
+
+    .about-card:hover,
+    .skill-card:hover{
+      transform:translateY(-4px);
+      box-shadow:0 24px 48px rgba(0,0,0,.24), 0 0 32px rgba(56,189,248,.08);
+      border-color:rgba(56,189,248,.22);
+    }
+
+    .card-icon{
+      width:58px;
+      height:58px;
+      border-radius:18px;
+      display:grid;
+      place-items:center;
+      font-size:24px;
+      margin-bottom:18px;
+      background:linear-gradient(135deg, rgba(37,99,235,.18), rgba(56,189,248,.10));
+      border:1px solid rgba(96,165,250,.18);
+      box-shadow:0 0 28px rgba(56,189,248,.08);
+    }
+
+    .about-card h3,
+    .skill-card h3{
+      margin:0;
+      font-family:"Space Grotesk",sans-serif;
+      font-size:1.35rem;
+      letter-spacing:-.03em;
+    }
+
+    .about-card p,
+    .skill-card ul{
+      margin-top:14px;
+      color:var(--muted);
+      line-height:1.8;
+      font-size:15px;
+    }
+
+    .timeline{
+      position:relative;
+      padding:40px 30px 40px 70px;
+    }
+
+    .timeline-line{
+      position:absolute;
+      left:36px;
+      top:40px;
+      bottom:40px;
+      width:2px;
+      background:linear-gradient(to bottom, rgba(56,189,248,.85), rgba(37,99,235,.18));
+      box-shadow:0 0 18px rgba(56,189,248,.22);
+    }
+
+    .timeline-item{
+      position:relative;
+      padding-bottom:38px;
+    }
+
+    .timeline-node{
+      position:absolute;
+      left:-45px;
+      top:10px;
+      width:18px;
+      height:18px;
+      border-radius:50%;
+      background:linear-gradient(135deg, var(--cyan), var(--blue));
+      box-shadow:0 0 20px rgba(56,189,248,.55);
+      border:3px solid rgba(5,8,22,.95);
+    }
+
+    .timeline-content h3{
+      margin:8px 0 8px;
+      font-size:1.4rem;
+      font-family:"Space Grotesk",sans-serif;
+      letter-spacing:-.03em;
+    }
+
+    .timeline-year{
+      color:#7FC9FF;
+      font-size:13px;
+      font-weight:700;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+
+    .timeline-content p{
+      color:var(--muted);
+      line-height:1.7;
+      margin:0;
+    }
+
+    .timeline-badge{
+      margin-top:16px;
+      display:inline-flex;
+      align-items:center;
+      padding:10px 14px;
+      border-radius:999px;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(96,165,250,.16);
+      color:#EAF4FF;
+      font-weight:700;
+      font-size:13px;
+    }
+
+    .skill-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:18px;
+    }
+
+    .skill-top span{
+      color:#7EC9FF;
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+
+    .skill-card ul{
+      padding-left:18px;
+      margin-bottom:0;
+    }
+
+    .skill-card li{
+      margin-bottom:12px;
+    }
+
+    /* placeholder hidden modules for later parts */
+    .module-shell{
+      display:none;
+      min-height:calc(100vh - 36px);
+      padding:28px;
+    }
+
+    @media (max-width: 980px){
+      .module-header{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+
+      .about-grid,
+      .skills-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+    /* Experience */
+    .experience-layout{
+      display:grid;
+      grid-template-columns:1.4fr .9fr;
+      gap:22px;
+    }
+
+    .featured-exp{
+      padding:34px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .featured-exp::after{
+      content:"";
+      position:absolute;
+      inset:auto -10% -35% auto;
+      width:320px;
+      height:320px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(56,189,248,.18), transparent 70%);
+      filter:blur(10px);
+      pointer-events:none;
+    }
+
+    .featured-label{
+      display:inline-flex;
+      align-items:center;
+      padding:10px 14px;
+      border-radius:999px;
+      background:rgba(56,189,248,.10);
+      border:1px solid rgba(56,189,248,.18);
+      color:#E8F4FF;
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+
+    .featured-exp h3{
+      margin:18px 0 10px;
+      font-size:2rem;
+      font-family:"Space Grotesk",sans-serif;
+      letter-spacing:-.04em;
+    }
+
+    .featured-sub{
+      color:#7EC9FF;
+      margin:0;
+      font-weight:600;
+    }
+
+    .industrial-tags,
+    .tech-stack,
+    .research-tags{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:20px;
+    }
+
+    .industrial-tags span,
+    .tech-stack span,
+    .research-tags span{
+      padding:10px 13px;
+      border-radius:999px;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(96,165,250,.14);
+      color:#DDEBFF;
+      font-size:12px;
+      font-weight:700;
+    }
+
+    .exp-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+      margin-top:26px;
+    }
+
+    .exp-point{
+      display:flex;
+      gap:16px;
+      padding:18px;
+      border-radius:20px;
+      background:rgba(255,255,255,.02);
+      border:1px solid rgba(96,165,250,.12);
+    }
+
+    .exp-icon{
+      width:52px;
+      height:52px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg, rgba(37,99,235,.18), rgba(56,189,248,.08));
+      border:1px solid rgba(96,165,250,.14);
+      font-size:22px;
+      flex:none;
+    }
+
+    .exp-point h4{
+      margin:0 0 10px;
+      font-size:1rem;
+    }
+
+    .exp-point p,
+    .mini-exp p,
+    .project-card p,
+    .research-card p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.7;
+    }
+
+    .mini-exp-group{
+      display:flex;
+      flex-direction:column;
+      gap:20px;
+    }
+
+    .mini-exp{
+      padding:28px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .mini-year{
+      color:#7FCBFF;
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+
+    .mini-exp h3{
+      margin:16px 0 8px;
+      font-size:1.5rem;
+      font-family:"Space Grotesk",sans-serif;
+    }
+
+    .mini-line{
+      margin-top:22px;
+      width:100%;
+      height:2px;
+      background:linear-gradient(to right, rgba(56,189,248,.7), transparent);
+      box-shadow:0 0 14px rgba(56,189,248,.2);
+    }
+
+    /* Projects */
+    .project-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:22px;
+    }
+
+    .project-card{
+      padding:28px;
+      position:relative;
+      overflow:hidden;
+      transition:transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+    }
+
+    .project-card:hover{
+      transform:translateY(-5px);
+      border-color:rgba(56,189,248,.25);
+      box-shadow:0 26px 54px rgba(0,0,0,.28), 0 0 32px rgba(56,189,248,.10);
+    }
+
+    .featured-project{
+      grid-column:span 2;
+    }
+
+    .project-top,
+    .research-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:16px;
+      flex-wrap:wrap;
+    }
+
+    .project-tag,
+    .project-status,
+    .research-type{
+      padding:10px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(96,165,250,.14);
+      font-size:12px;
+      font-weight:700;
+      color:#EAF4FF;
+    }
+
+    .project-card h3,
+    .research-card h3{
+      margin:0 0 14px;
+      font-family:"Space Grotesk",sans-serif;
+      font-size:1.8rem;
+      line-height:1.2;
+      letter-spacing:-.04em;
+    }
+
+    .project-btn,
+    .research-btn{
+      margin-top:24px;
+      padding:13px 18px;
+      border:none;
+      border-radius:16px;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(96,165,250,.16);
+      color:var(--text);
+      font-weight:700;
+      cursor:pointer;
+      transition:all .28s ease;
+    }
+
+    .project-btn:hover,
+    .research-btn:hover{
+      transform:translateY(-2px);
+      box-shadow:0 16px 36px rgba(37,99,235,.16);
+      border-color:rgba(56,189,248,.25);
+    }
+
+    /* Research */
+    .research-grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:24px;
+    }
+
+    .research-card{
+      padding:34px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .elite-research{
+      border-color:rgba(255,179,71,.18);
+      box-shadow:0 20px 60px rgba(0,0,0,.24), 0 0 36px rgba(255,179,71,.05);
+    }
+
+    .research-badge{
+      padding:10px 14px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+
+    .research-badge.thesis{
+      background:rgba(56,189,248,.10);
+      border:1px solid rgba(56,189,248,.20);
+      color:#DDF4FF;
+    }
+
+    .research-badge.review{
+      background:rgba(255,179,71,.12);
+      border:1px solid rgba(255,179,71,.24);
+      color:#FFE7B5;
+    }
+
+    .journal-box{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+      margin-top:24px;
+      padding:20px;
+      border-radius:22px;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(96,165,250,.12);
+    }
+
+    .journal-box span{
+      display:block;
+      color:#7FCBFF;
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      margin-bottom:8px;
+    }
+
+    .journal-box strong{
+      font-size:1rem;
+      line-height:1.6;
+    }
+
+    .research-actions{
+      display:flex;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-top:26px;
+    }
+
+    .primary-btn{
+      background:linear-gradient(135deg, rgba(37,99,235,.92), rgba(56,189,248,.70));
+      border-color:rgba(56,189,248,.30);
+      box-shadow:0 16px 38px rgba(37,99,235,.18);
+    }
+
+    @media (max-width: 1180px){
+      .experience-layout,
+      .project-grid{
+        grid-template-columns:1fr;
+      }
+
+      .featured-project{
+        grid-column:span 1;
+      }
+
+      .exp-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media (max-width: 700px){
+      .research-card,
+      .featured-exp,
+      .project-card,
+      .mini-exp{
+        padding:24px 20px;
+      }
+
+      .journal-box{
+        grid-template-columns:1fr;
+      }
+
+      .project-card h3,
+      .research-card h3,
+      .featured-exp h3{
+        font-size:1.45rem;
+      }
+    }
+
+    /* Certifications */
+    .certificate-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:22px;
+    }
+
+    .certificate-card{
+      padding:28px;
+      text-align:left;
+      transition:all .3s ease;
+    }
+
+    .certificate-card:hover{
+      transform:translateY(-5px);
+      border-color:rgba(56,189,248,.24);
+      box-shadow:0 22px 50px rgba(0,0,0,.24), 0 0 26px rgba(56,189,248,.08);
+    }
+
+    .certificate-icon,
+    .contact-icon{
+      width:62px;
+      height:62px;
+      border-radius:20px;
+      display:grid;
+      place-items:center;
+      margin-bottom:18px;
+      background:linear-gradient(135deg, rgba(37,99,235,.18), rgba(56,189,248,.10));
+      border:1px solid rgba(96,165,250,.18);
+      font-size:24px;
+      color:#EAF6FF;
+      box-shadow:0 0 26px rgba(56,189,248,.08);
+    }
+
+    .certificate-card h3,
+    .reference-content h3,
+    .contact-card h3,
+    .footer-panel h3{
+      margin:0 0 10px;
+      font-family:"Space Grotesk",sans-serif;
+      letter-spacing:-.03em;
+    }
+
+    .certificate-card p,
+    .reference-content p,
+    .footer-panel p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.7;
+    }
+
+    /* References */
+    .reference-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:24px;
+    }
+
+    .reference-card{
+      padding:30px;
+      display:flex;
+      align-items:flex-start;
+      gap:22px;
+      transition:all .3s ease;
+    }
+
+    .reference-card:hover{
+      transform:translateY(-4px);
+      border-color:rgba(56,189,248,.22);
+      box-shadow:0 20px 48px rgba(0,0,0,.22), 0 0 28px rgba(56,189,248,.08);
+    }
+
+    .reference-avatar{
+      width:82px;
+      height:82px;
+      border-radius:24px;
+      flex:none;
+      display:grid;
+      place-items:center;
+      font-family:"Space Grotesk",sans-serif;
+      font-size:1.5rem;
+      font-weight:700;
+      color:#EAF6FF;
+      background:linear-gradient(135deg, rgba(37,99,235,.24), rgba(56,189,248,.12));
+      border:1px solid rgba(96,165,250,.18);
+      box-shadow:0 0 24px rgba(56,189,248,.10);
+    }
+
+    .reference-content span,
+    .contact-card span{
+      display:block;
+      color:#7FCBFF;
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      margin-bottom:8px;
+    }
+
+    .reference-links{
+      margin-top:18px;
+    }
+
+    .reference-links a{
+      text-decoration:none;
+      color:#EAF6FF;
+      font-weight:600;
+    }
+
+    /* Contact */
+    .contact-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:22px;
+    }
+
+    .contact-card{
+      padding:28px;
+      display:flex;
+      align-items:center;
+      gap:22px;
+      text-decoration:none;
+      color:var(--text);
+      transition:all .3s ease;
+    }
+
+    .contact-card:hover{
+      transform:translateY(-5px);
+      border-color:rgba(56,189,248,.25);
+      box-shadow:0 24px 54px rgba(0,0,0,.24), 0 0 30px rgba(56,189,248,.10);
+    }
+
+    .contact-card h3{
+      margin-bottom:0;
+      font-size:1rem;
+      word-break:break-word;
+    }
+
+    .footer-panel{
+      padding:34px;
+      margin-top:10px;
+    }
+
+    .footer-line{
+      width:100%;
+      height:1px;
+      margin:24px 0;
+      background:linear-gradient(to right, rgba(56,189,248,.7), transparent);
+      box-shadow:0 0 16px rgba(56,189,248,.18);
+    }
+
+    .footer-bottom{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    @media (max-width: 1180px){
+      .certificate-grid{
+        grid-template-columns:1fr 1fr;
+      }
+
+      .reference-grid,
+      .contact-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media (max-width: 700px){
+      .certificate-grid{
+        grid-template-columns:1fr;
+      }
+
+      .reference-card,
+      .contact-card{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+    }
+
+    @media (max-width: 1100px){
+      .hero-main-content{
+        grid-template-columns:1fr;
+        text-align:center;
+        gap:10px;
+      }
+
+      .hero-text-content{
+        max-width:100%;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        padding-right:0;
+      }
+
+      .hero-image-zone{
+        min-height:560px;
+        margin-top:10px;
+      }
+
+      .portrait-cutout-wrap{
+        max-width:420px;
+        min-height:460px;
+      }
+
+      .portrait-cutout-wrap::before{
+        height:340px;
+      }
+
+      .portrait-cutout-wrap img{
+        width:78%;
+        max-width:320px;
+      }
+    }
+
+    @media (max-width: 920px){
+      .sidebar{
+        transform:translateX(-120%);
+        transition:transform .35s ease;
+        z-index:200;
+      }
+
+      .sidebar.open{
+        transform:translateX(0);
+      }
+
+      .overlay{
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,.55);
+        backdrop-filter:blur(8px);
+        opacity:0;
+        pointer-events:none;
+        transition:opacity .3s ease;
+        z-index:150;
+      }
+
+      .overlay.show{
+        opacity:1;
+        pointer-events:auto;
+      }
+
+      .content{
+        padding:90px 16px 16px;
+      }
+
+      .mobile-topbar{
+        position:fixed;
+        top:14px;
+        left:14px;
+        right:14px;
+        height:64px;
+        z-index:120;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        padding:0 16px;
+        border-radius:20px;
+        background:rgba(7,17,31,.82);
+        border:1px solid rgba(96,165,250,.16);
+        backdrop-filter:blur(18px);
+      }
+
+      .mobile-title{
+        font-size:14px;
+        font-weight:700;
+        color:#EAF4FF;
+      }
+
+      .mobile-btn{
+        width:42px;
+        height:42px;
+        border-radius:14px;
+        border:none;
+        background:rgba(255,255,255,.04);
+        color:#fff;
+        font-size:20px;
+      }
+
+      .hero{
+        grid-template-columns:1fr;
+      }
+
+      .hero-image-wrap{
+        min-height:480px;
+        order:-1;
+        padding-top:0;
+      }
+
+      .portrait-card{
+        width:min(100%, 360px);
+        min-height:520px;
+        margin-inline:auto;
+      }
+
+      .portrait-card img{
+        width:125%;
+        max-width:470px;
+      }
+
+      .hero-aside{
+        grid-template-columns:1fr;
+      }
+    }
+
+      .portrait-card{
+        width:min(100%, 380px);
+        margin-inline:auto;
+        min-height:420px;
+      }
+
+      .portrait-card img{
+        width:112%;
+        max-width:430px;
+        transform:translateY(12px) scale(1.04);
+      }
+    }
+
+    @media (max-width: 560px){
+      .hero-single{
+        padding:18px;
+        min-height:auto;
+      }
+
+      .hero-main-content{
+        gap:0;
+      }
+
+      .hero-text-content{
+        padding-top:20px;
+      }
+
+      .hero-text-content h1{
+        font-size:2.6rem;
+        line-height:1;
+      }
+
+      .hero-image-zone{
+        min-height:340px;
+        margin-top:12px;
+      }
+
+      .portrait-cutout-wrap{
+        width:100%;
+        max-width:320px;
+        min-height:320px;
+      }
+
+      .portrait-cutout-wrap::before{
+        height:240px;
+        border-radius:28px;
+      }
+
+      .portrait-cutout-wrap::after{
+        width:78%;
+        height:58%;
+        bottom:20px;
+      }
+
+      .portrait-cutout-wrap img{
+        width:76%;
+        max-width:240px;
+        bottom:0;
+      }
+
+      .hero-image-glow{
+        width:220px;
+        height:220px;
+        bottom:40px;
+      }
+
+      .line1{width:180px;top:24%;left:4%}
+      .line2{width:140px;top:60%;right:0%}
+      .line3{width:100px;bottom:24%;left:34%}
+.glass{border-radius:22px}
+      .hero-copy{padding:24px 18px 28px}
+      h1{font-size:2.7rem}
+      .subtitle{font-size:1rem}
+      .intro{font-size:.96rem; line-height:1.8}
+      .cta-row{gap:10px}
+      .cta{width:100%}
+      .hero-image-wrap{min-height:360px; padding:0}
+      .portrait-card{
+        width:100%;
+        min-height:420px;
+        border-radius:28px;
+      }
+
+      .portrait-card img{
+        width:132%;
+        max-width:420px;
+        bottom:-4px;
+      }
+
+      .info-card{padding:18px}
+      .hero-aside{gap:12px}
+      .module-header,
+      .about-card,
+      .skill-card,
+      .project-card,
+      .research-card,
+      .certificate-card,
+      .reference-card,
+      .contact-card,
+      .featured-exp,
+      .mini-exp{
+        padding:22px 18px;
+      }
+    }
+
+    /* tiny utility */
+    /* reveal animations */
+    .reveal-hidden{
+      opacity:0;
+      transform:translateY(28px) scale(.98);
+      transition:all .8s cubic-bezier(.2,.65,.2,1);
+    }
+
+    .reveal-visible{
+      opacity:1;
+      transform:translateY(0) scale(1);
+    }
+
+    /* particle system */
+    .particles{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+      z-index:0;
+    }
+
+    .particle{
+      position:absolute;
+      bottom:-40px;
+      width:4px;
+      height:4px;
+      border-radius:50%;
+      background:rgba(56,189,248,.8);
+      box-shadow:0 0 14px rgba(56,189,248,.7);
+      animation:particleFloat linear infinite;
+    }
+
+    @keyframes particleFloat{
+      from{
+        transform:translateY(0) scale(.8);
+        opacity:0;
+      }
+
+      20%{
+        opacity:1;
+      }
+
+      to{
+        transform:translateY(-120vh) scale(1.3);
+        opacity:0;
+      }
+    }
+
+    /* electric moving lines */
+    body.loaded::before{
+      animation:gridPulse 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes gridPulse{
+      0%{
+        opacity:.18;
+        transform:scale(1);
+      }
+
+      100%{
+        opacity:.28;
+        transform:scale(1.02);
+      }
+    }
+
+    /* futuristic loading fade */
+    body{
+      opacity:0;
+      transition:opacity .8s ease;
+    }
+
+    body.loaded{
+      opacity:1;
+    }
+
+    /* custom cursor glow */
+    body::selection{
+      background:rgba(56,189,248,.25);
+      color:#fff;
+    }
+
+    /* active panel cinematic effect */
+    .panel.active{
+      animation:panelCinematic .7s cubic-bezier(.2,.65,.2,1);
+    }
+
+    @keyframes panelCinematic{
+      from{
+        opacity:0;
+        transform:translateY(24px) scale(.985);
+        filter:blur(8px);
+      }
+
+      to{
+        opacity:1;
+        transform:translateY(0) scale(1);
+        filter:blur(0);
+      }
+    }
+
+    /* hover electric pulse */
+    .project-card::before,
+    .research-card::before,
+    .certificate-card::before,
+    .contact-card::before,
+    .reference-card::before{
+      content:"";
+      position:absolute;
+      inset:-1px;
+      border-radius:inherit;
+      background:linear-gradient(135deg, transparent, rgba(56,189,248,.18), transparent);
+      opacity:0;
+      transition:opacity .4s ease;
+      pointer-events:none;
+    }
+
+    .project-card:hover::before,
+    .research-card:hover::before,
+    .certificate-card:hover::before,
+    .contact-card:hover::before,
+    .reference-card:hover::before{
+      opacity:1;
+    }
+
+    /* animated electric line */
+    .footer-line,
+    .mini-line,
+    .timeline-line{
+      position:relative;
+      overflow:hidden;
+    }
+
+    .footer-line::after,
+    .mini-line::after,
+    .timeline-line::after{
+      content:"";
+      position:absolute;
+      top:0;
+      left:-40%;
+      width:40%;
+      height:100%;
+      background:linear-gradient(to right, transparent, rgba(255,255,255,.7), transparent);
+      animation:lineFlow 3s linear infinite;
+    }
+
+    @keyframes lineFlow{
+      from{left:-40%}
+      to{left:120%}
+    }
+
+    /* mobile premium optimization */
+    @media (max-width:700px){
+      .particle{
+        width:3px;
+        height:3px;
+      }
+
+      .sidebar{
+        backdrop-filter:blur(24px);
+      }
+    }
+
+    /* advanced cursor glow */
+    .cursor-glow{
+      position:fixed;
+      width:26px;
+      height:26px;
+      border-radius:50%;
+      pointer-events:none;
+      z-index:9999;
+      background:radial-gradient(circle, rgba(56,189,248,.35), rgba(56,189,248,.08), transparent 72%);
+      box-shadow:0 0 24px rgba(56,189,248,.35);
+      transform:translate(-50%, -50%);
+      transition:transform .08s linear;
+      mix-blend-mode:screen;
+    }
+
+    /* live engineering stats */
+    .hero-copy::after{
+      content:"SYSTEM ACTIVE • ENGINEERING INTERFACE ONLINE";
+      margin-top:26px;
+      display:inline-flex;
+      align-items:center;
+      width:max-content;
+      padding:12px 16px;
+      border-radius:14px;
+      border:1px solid rgba(56,189,248,.18);
+      background:rgba(255,255,255,.02);
+      color:#7FCBFF;
+      font-size:12px;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      animation:systemPulse 2.5s ease-in-out infinite;
+    }
+
+    @keyframes systemPulse{
+      50%{
+        box-shadow:0 0 22px rgba(56,189,248,.16);
+      }
+    }
+
+    /* project hologram overlay */
+    .project-card::after{
+      content:"ENGINEERING MODULE";
+      position:absolute;
+      top:18px;
+      right:18px;
+      font-size:10px;
+      letter-spacing:.18em;
+      color:rgba(127,203,255,.35);
+      font-weight:700;
+    }
+
+    /* research premium border sweep */
+    .elite-research::before{
+      opacity:1 !important;
+      background:linear-gradient(135deg, transparent, rgba(255,179,71,.22), transparent) !important;
+    }
+
+    /* mobile cinematic spacing */
+    @media (max-width:560px){
+      .hero{
+        gap:14px;
+      }
+
+      .module-grid{
+        gap:18px;
+      }
+
+      .cursor-glow{
+        display:none;
+      }
+    }
+
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  </style>
+</head>
+<body>
+  <div class="cursor-glow"></div>
+  <div class="overlay" id="overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Sidebar Navigation">
+    <div class="brand">
+      <div class="brand-badge">AD</div>
+      <button class="brand-close" id="closeSidebar" aria-label="Close navigation">
+        ✕
+      </button>
+    </div>
+
+    <nav class="nav" id="nav">
+      <button class="active" data-target="homePanel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10.5V20h14v-9.5"/><path d="M10 20v-6h4v6"/></svg>
+        Home
+      </button>
+      <button data-target="aboutPanel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 20c1.4-3.2 4.1-5 6.5-5s5.1 1.8 6.5 5"/></svg>
+        About
+      </button>
+      <button data-target="educationPanel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5 12 4l9 4.5-9 4.5-9-4.5Z"/><path d="M6 10.5V15c0 1.7 2.7 3.5 6 3.5s6-1.8 6-3.5v-4.5"/></svg>
+        Education
+      </button>
+      <button data-target="skillsPanel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19h16"/><path d="M7 16V8"/><path d="M12 16V5"/><path d="M17 16v-8"/></svg>
+        Skills
+      </button>
+      <button data-target="experiencePanel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="7" width="16" height="12" rx="3"/><path d="M9 7V5h6v2"/></svg>
+        Experience
+      </button>
+      <button data-target="projectsPanel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M7 4v6"/><path d="M17 4v6"/><rect x="5" y="8" width="14" height="12" rx="3"/></svg>
+        Projects
+      </button>
+      <button data-target="researchPanel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10"/><path d="M9 3v4l-4 8a4 4 0 0 0 3.6 6h6.8A4 4 0 0 0 19 15l-4-8V3"/><path d="M8.5 14h7"/></svg>
+        Research
+      </button>
+      <button data-target="certificatesPanel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="5"/><path d="m9.5 13.5-1 6 3.5-2 3.5 2-1-6"/></svg>
+        Certifications
+      </button>
+      <button data-target="referencesPanel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5h13"/><path d="M8 12h13"/><path d="M8 19h13"/><path d="M3 5h.01"/><path d="M3 12h.01"/><path d="M3 19h.01"/></svg>
+        References
+      </button>
+      <button data-target="contactPanel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v11A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5Z"/><path d="m6.5 7 5.5 5 5.5-5"/></svg>
+        Contact
+      </button>
+    </nav>
+
+    <div class="resume-card">
+      <p>Single-file premium portfolio. Built for a futuristic engineering identity with research and industrial focus.</p>
+      <a class="resume-btn" href="Arka_Deb_Nath_CV.pdf" download role="button">Download Resume</a>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div class="mobile-topbar">
+      <button class="mobile-btn" id="openSidebar" aria-label="Open navigation">☰</button>
+      <div class="mobile-title">Arka Deb Nath </div>
+      <div class="mobile-btn" aria-hidden="true"></div>
+    </div>
+
+    <!-- HOME PANEL -->
+    <section class="panel active" id="homePanel" aria-label="Home">
+      <div class="hero-single glass">
+
+        <div class="hero-circuit-bg">
+          <span class="circuit-line line1"></span>
+          <span class="circuit-line line2"></span>
+          <span class="circuit-line line3"></span>
+          <span class="circuit-dot dot1"></span>
+          <span class="circuit-dot dot2"></span>
+          <span class="circuit-dot dot3"></span>
+          <span class="electric-wave"></span>
+        </div>
+
+        <div class="hero-main-content">
+          <div class="hero-text-content">
+            <div class="eyebrow">
+              <span class="dot"></span>
+              Electrical Engineering Research Portfolio
+            </div>
+
+            <h1>
+              Arka <span class="accent">Deb</span> Nath
+            </h1>
+
+            <p class="subtitle">
+              Electrical & Electronic Engineering Student • Research Enthusiast • Automation Focused
+            </p>
+
+            <p class="intro">
+              Passionate about intelligent energy systems, industrial automation, renewable energy technologies, and advanced engineering research.
+            </p>
+
+            <div class="hero-mini-tags">
+              <span>EEE • IIUC</span>
+              <span>Research</span>
+              <span>Industrial Experience</span>
+            </div>
+          </div>
+
+          <div class="hero-image-zone">
+            <div class="hero-image-glow"></div>
+
+            <div class="portrait-cutout-wrap">
+              <img src="arka-profile.png" alt="Arka Deb Nath">
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ABOUT PANEL -->
+    <section class="panel" id="aboutPanel">
+      <div class="module-grid">
+        <div class="module-header glass">
+          <div>
+            <span class="section-tag">About</span>
+            <h2>Engineering Identity & Technical Vision</h2>
+          </div>
+          <p>An Electrical & Electronic Engineering student focused on renewable energy systems, industrial automation, intelligent control engineering, and advanced materials research.</p>
+        </div>
+
+        <div class="about-grid">
+          <article class="about-card glass">
+            <div class="card-icon">⚡</div>
+            <h3>Technical Foundation</h3>
+            <p>Strong understanding of electrical systems, automation logic, and engineering fundamentals with hands-on exposure to industrial operations.</p>
+          </article>
+
+          <article class="about-card glass">
+            <div class="card-icon">🔬</div>
+            <h3>Research Orientation</h3>
+            <p>Actively involved in solar energy materials research and advanced MAX phase material studies for future engineering applications.</p>
+          </article>
+
+          <article class="about-card glass">
+            <div class="card-icon">🏭</div>
+            <h3>Industrial Exposure</h3>
+            <p>Experienced with transformer systems, switchgear, 11kV distribution, industrial protection systems, and plant-level electrical management.</p>
+          </article>
+
+          <article class="about-card glass">
+            <div class="card-icon">🧠</div>
+            <h3>Problem Solver</h3>
+            <p>Combining analytical thinking, leadership, and engineering creativity to develop modern energy and automation solutions.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- EDUCATION PANEL -->
+    <section class="panel" id="educationPanel">
+      <div class="module-grid">
+        <div class="module-header glass">
+          <div>
+            <span class="section-tag">Education</span>
+            <h2>Academic Journey</h2>
+          </div>
+          <p>A structured engineering education path supported by consistent academic performance and technical growth.</p>
+        </div>
+
+        <div class="timeline glass">
+          <div class="timeline-line"></div>
+
+          <div class="timeline-item">
+            <div class="timeline-node"></div>
+            <div class="timeline-content">
+              <span class="timeline-year">2022 — 2025</span>
+              <h3>B.Sc. in Electrical & Electronic Engineering</h3>
+              <p>International Islamic University Chittagong (IIUC)</p>
+              <div class="timeline-badge">CGPA 3.424 / 4.00</div>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-node"></div>
+            <div class="timeline-content">
+              <span class="timeline-year">2020</span>
+              <h3>Higher Secondary Certificate (HSC)</h3>
+              <p>Bakalia Government College • Science</p>
+              <div class="timeline-badge">GPA 5.00 / 5.00</div>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-node"></div>
+            <div class="timeline-content">
+              <span class="timeline-year">2018</span>
+              <h3>Secondary School Certificate (SSC)</h3>
+              <p>Nasirabad Government High School • Science</p>
+              <div class="timeline-badge">GPA 5.00 / 5.00</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SKILLS PANEL -->
+    <section class="panel" id="skillsPanel">
+      <div class="module-grid">
+        <div class="module-header glass">
+          <div>
+            <span class="section-tag">Skills</span>
+            <h2>Engineering Capability Dashboard</h2>
+          </div>
+          <p>A combination of electrical engineering knowledge, industrial tools, software systems, and professional collaboration skills.</p>
+        </div>
+
+        <div class="skills-grid">
+          <article class="skill-card glass">
+            <div class="skill-top">
+              <h3>Electrical</h3>
+              <span>Core Systems</span>
+            </div>
+            <ul>
+              <li>House Wiring</li>
+              <li>Motor Controlling</li>
+              <li>Substation Design</li>
+              <li>PLC (Basic)</li>
+            </ul>
+          </article>
+
+          <article class="skill-card glass">
+            <div class="skill-top">
+              <h3>Software & Design</h3>
+              <span>Technical Tools</span>
+            </div>
+            <ul>
+              <li>MATLAB</li>
+              <li>AutoCAD</li>
+              <li>PVsyst</li>
+              <li>SolidWorks Electrical</li>
+            </ul>
+          </article>
+
+          <article class="skill-card glass">
+            <div class="skill-top">
+              <h3>Industrial Automation</h3>
+              <span>Automation Systems</span>
+            </div>
+            <ul>
+              <li>VFD</li>
+              <li>HMI</li>
+              <li>Industrial Automation</li>
+              <li>Protection Systems</li>
+            </ul>
+          </article>
+
+          <article class="skill-card glass">
+            <div class="skill-top">
+              <h3>Soft Skills</h3>
+              <span>Professional Growth</span>
+            </div>
+            <ul>
+              <li>Leadership</li>
+              <li>Communication</li>
+              <li>Problem Solving</li>
+              <li>Teamwork</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPERIENCE PANEL -->
+    <section class="panel" id="experiencePanel">
+      <div class="module-grid">
+        <div class="module-header glass">
+          <div>
+            <span class="section-tag">Experience</span>
+            <h2>Industrial & Professional Experience</h2>
+          </div>
+          <p>Focused on industrial electrical systems, automation infrastructure, and academic technical assistance with strong engineering discipline.</p>
+        </div>
+
+        <div class="experience-layout">
+          <article class="featured-exp glass">
+            <div class="featured-label">Featured Industrial Attachment</div>
+            <h3>PHP Float Glass Industries Limited</h3>
+            <p class="featured-sub">Industrial Attachment • Oct 2025 — Nov 2025</p>
+
+            <div class="industrial-tags">
+              <span>11kV Systems</span>
+              <span>Transformers</span>
+              <span>Switchgear</span>
+              <span>Protection</span>
+              <span>Automation</span>
+              <span>Load Management</span>
+            </div>
+
+            <div class="exp-grid">
+              <div class="exp-point">
+                <div class="exp-icon">⚙</div>
+                <div>
+                  <h4>Industrial Electrical Systems</h4>
+                  <p>Observed power distribution systems, transformer operations, industrial switchgear, and protection systems in a real manufacturing environment.</p>
+                </div>
+              </div>
+
+              <div class="exp-point">
+                <div class="exp-icon">⚡</div>
+                <div>
+                  <h4>11kV Distribution Network</h4>
+                  <p>Studied load management, ECR monitoring, and plant electrical infrastructure with real-time industrial operational exposure.</p>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <div class="mini-exp-group">
+            <article class="mini-exp glass">
+              <span class="mini-year">Aug 2025 — Dec 2025</span>
+              <h3>Teaching Assistant</h3>
+              <p>Department of EEE • IIUC</p>
+              <div class="mini-line"></div>
+            </article>
+
+            <article class="mini-exp glass">
+              <span class="mini-year">Jan 2026 — Present</span>
+              <h3>Teaching Assistant</h3>
+              <p>Department of CCE • IIUC</p>
+              <div class="mini-line"></div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS PANEL -->
+    <section class="panel" id="projectsPanel">
+      <div class="module-grid">
+        <div class="module-header glass">
+          <div>
+            <span class="section-tag">Projects</span>
+            <h2>Engineering Project Showcase</h2>
+          </div>
+          <p>Interactive engineering projects combining electronics, renewable energy, control systems, embedded technologies, and intelligent automation concepts.</p>
+        </div>
+
+        <div class="project-grid">
+          <article class="project-card glass featured-project">
+            <div class="project-top">
+              <span class="project-tag">Flagship Project</span>
+              <span class="project-status">Control Engineering</span>
+            </div>
+            <h3>Antenna Pointing System Stabilization Using PID Control</h3>
+            <p>Designed a stabilization model using PID control logic to maintain accurate antenna positioning and motion correction.</p>
+            <div class="tech-stack">
+              <span>PID</span>
+              <span>Control Systems</span>
+              <span>MATLAB</span>
+            </div>
+            <button class="project-btn">View Project</button>
+          </article>
+
+          <article class="project-card glass">
+            <div class="project-top">
+              <span class="project-tag">Renewable Energy</span>
+            </div>
+            <h3>PV Charge Controller</h3>
+            <p>Designed and implemented a solar charge controller focused on stable charging, battery safety, and energy efficiency.</p>
+            <div class="tech-stack">
+              <span>Solar</span>
+              <span>Power Electronics</span>
+            </div>
+            <button class="project-btn">View Project</button>
+          </article>
+
+          <article class="project-card glass">
+            <div class="project-top">
+              <span class="project-tag">Automation</span>
+            </div>
+            <h3>Solar Tracker System</h3>
+            <p>Developed a sunlight tracking mechanism to improve solar panel efficiency through automated positioning.</p>
+            <div class="tech-stack">
+              <span>Arduino</span>
+              <span>Tracking</span>
+            </div>
+            <button class="project-btn">View Project</button>
+          </article>
+
+          <article class="project-card glass">
+            <div class="project-top">
+              <span class="project-tag">AI & MATLAB</span>
+            </div>
+            <h3>Leaf Health Detector</h3>
+            <p>Created an image-processing-based detection system using MATLAB for identifying plant health conditions.</p>
+            <div class="tech-stack">
+              <span>MATLAB</span>
+              <span>Image Processing</span>
+            </div>
+            <button class="project-btn">View Project</button>
+          </article>
+
+          <article class="project-card glass">
+            <div class="project-top">
+              <span class="project-tag">Embedded Systems</span>
+            </div>
+            <h3>Arduino Dot Matrix Display</h3>
+            <p>Interactive educational display using Arduino UNO R3 and dot matrix systems for children's learning applications.</p>
+            <div class="tech-stack">
+              <span>Arduino</span>
+              <span>Display Systems</span>
+            </div>
+            <button class="project-btn">View Project</button>
+          </article>
+
+          <article class="project-card glass">
+            <div class="project-top">
+              <span class="project-tag">Digital Logic</span>
+            </div>
+            <h3>ATM Password Verification IC</h3>
+            <p>Designed an integrated verification logic with dual-digit constraints for secure ATM password validation systems.</p>
+            <div class="tech-stack">
+              <span>Digital Electronics</span>
+              <span>IC Design</span>
+            </div>
+            <button class="project-btn">View Project</button>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESEARCH PANEL -->
+    <section class="panel" id="researchPanel">
+      <div class="module-grid">
+        <div class="module-header glass">
+          <div>
+            <span class="section-tag">Research</span>
+            <h2>Academic Research & Publications</h2>
+          </div>
+          <p>Research-oriented engineering work focused on renewable energy materials, computational materials science, and advanced engineering applications.</p>
+        </div>
+
+        <div class="research-grid">
+          <article class="research-card glass">
+            <div class="research-top">
+              <span class="research-badge thesis">Undergraduate Thesis</span>
+              <span class="research-type">Renewable Energy</span>
+            </div>
+
+            <h3>Design and Simulation Modeling of FASnI3-Based Lead-free Perovskite Solar Cells With Different Electron Transport Layers for Energy Harvesting</h3>
+
+            <p>Focused on advanced lead-free perovskite solar cell structures and electron transport layer optimization for efficient energy harvesting systems.</p>
+
+            <div class="research-tags">
+              <span>Perovskite</span>
+              <span>Solar Cells</span>
+              <span>Energy Harvesting</span>
+              <span>Simulation</span>
+            </div>
+
+            <div class="research-actions">
+              <a class="research-btn primary-btn" href="thesis.pdf" target="_blank">View Research</a>
+              <a class="research-btn" href="thesis.pdf" download>Download PDF</a>
+            </div>
+          </article>
+
+          <article class="research-card glass elite-research">
+            <div class="research-top">
+              <span class="research-badge review">Under Review</span>
+              <span class="research-type">Elsevier • Q1</span>
+            </div>
+
+            <h3>First-Principles Study of Structural, Thermal, and Optoelectronic Properties of Phosphide MAX Phases M3AP2 (M = Zr, Hf; A = Ge, Se) for High-Temperature Applications</h3>
+
+            <p>Advanced computational investigation of phosphide MAX phases targeting structural stability, thermal behavior, and optoelectronic performance for high-temperature applications.</p>
+
+            <div class="journal-box">
+              <div>
+                <span>Publisher</span>
+                <strong>Elsevier (Q1)</strong>
+              </div>
+              <div>
+                <span>Journal</span>
+                <strong>Diamond & Related Materials</strong>
+              </div>
+            </div>
+
+            <div class="research-tags">
+              <span>MAX Phases</span>
+              <span>Optoelectronics</span>
+              <span>Thermal Analysis</span>
+              <span>Materials Science</span>
+            </div>
+
+            <div class="research-actions">
+              <a class="research-btn primary-btn" href="research-paper.pdf" target="_blank">View Paper</a>
+              <a class="research-btn" href="research-paper.pdf" download>Download PDF</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- CERTIFICATIONS PANEL -->
+    <section class="panel" id="certificatesPanel">
+      <div class="module-grid">
+        <div class="module-header glass">
+          <div>
+            <span class="section-tag">Certifications</span>
+            <h2>Achievements & Technical Certifications</h2>
+          </div>
+          <p>Professional workshops, industrial certifications, and engineering skill development programs supporting technical and research growth.</p>
+        </div>
+
+        <div class="certificate-grid">
+          <article class="certificate-card glass">
+            <div class="certificate-icon">📊</div>
+            <h3>MATLAB Onramp</h3>
+            <p>MathWorks Certification</p>
+          </article>
+
+          <article class="certificate-card glass">
+            <div class="certificate-icon">⚙️</div>
+            <h3>SOLIDWORKS Electrical Design Associate</h3>
+            <p>Electrical Design Certification</p>
+          </article>
+
+          <article class="certificate-card glass">
+            <div class="certificate-icon">🔌</div>
+            <h3>IEEE Engineering Design Workshop</h3>
+            <p>Kickstart Your Engineering Design Career</p>
+          </article>
+
+          <article class="certificate-card glass">
+            <div class="certificate-icon">🤖</div>
+            <h3>Integrating ML with Robotics</h3>
+            <p>IEEE RAS Seminar Participation</p>
+          </article>
+
+          <article class="certificate-card glass">
+            <div class="certificate-icon">🏭</div>
+            <h3>Industrial Attachment Certification</h3>
+            <p>PHP Float Glass Industries Ltd.</p>
+          </article>
+
+          <article class="certificate-card glass">
+            <div class="certificate-icon">🧪</div>
+            <h3>ICISET 2022 Participation</h3>
+            <p>International Conference on Innovations in Science, Engineering & Technology</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- REFERENCES PANEL -->
+    <section class="panel" id="referencesPanel">
+      <div class="module-grid">
+        <div class="module-header glass">
+          <div>
+            <span class="section-tag">References</span>
+            <h2>Professional References</h2>
+          </div>
+          <p>Academic and professional references reflecting technical discipline, leadership qualities, and engineering potential.</p>
+        </div>
+
+        <div class="reference-grid">
+          <article class="reference-card glass">
+            <div class="reference-avatar">DR</div>
+            <div class="reference-content">
+              <h3>Debashish Rudra</h3>
+              <span>Assistant Professor</span>
+              <p>BAF Shaheen College Chattogram</p>
+
+              <div class="reference-links">
+                <a href="tel:+8801670472241">+8801670-472241</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="reference-card glass">
+            <div class="reference-avatar">ZH</div>
+            <div class="reference-content">
+              <h3>Dr. Md. Zahid Hasan</h3>
+              <span>Assistant Professor • Dept. of EEE</span>
+              <p>International Islamic University Chittagong</p>
+
+              <div class="reference-links">
+                <a href="tel:+8801722261265">+8801722-261265</a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT PANEL -->
+    <section class="panel" id="contactPanel">
+      <div class="module-grid">
+        <div class="module-header glass">
+          <div>
+            <span class="section-tag">Contact</span>
+            <h2>Connect & Collaborate</h2>
+          </div>
+          <p>Available for engineering collaboration, research opportunities, industrial discussions, and academic networking.</p>
+        </div>
+
+        <div class="contact-grid">
+          <a class="contact-card glass" href="mailto:arkadebnath1179@gmail.com">
+            <div class="contact-icon">✉</div>
+            <div>
+              <span>Email</span>
+              <h3>arkadebnath1179@gmail.com</h3>
+            </div>
+          </a>
+
+          <a class="contact-card glass" href="https://www.linkedin.com/in/arka-deb-nath" target="_blank">
+            <div class="contact-icon">in</div>
+            <div>
+              <span>LinkedIn</span>
+              <h3>linkedin.com/in/arka-deb-nath</h3>
+            </div>
+          </a>
+
+          <a class="contact-card glass" href="https://facebook.com" target="_blank">
+            <div class="contact-icon">f</div>
+            <div>
+              <span>Facebook</span>
+              <h3>facebook.com/arka.deb.nath</h3>
+            </div>
+          </a>
+
+          <a class="contact-card glass" href="tel:+8801645351350">
+            <div class="contact-icon">☎</div>
+            <div>
+              <span>Phone</span>
+              <h3>+8801645-351350</h3>
+            </div>
+          </a>
+        </div>
+
+        <footer class="footer-panel glass">
+          <div>
+            <h3>Arka Deb Nath</h3>
+            <p>Electrical & Electronic Engineering • Research • Automation • Renewable Energy</p>
+          </div>
+
+          <div class="footer-line"></div>
+
+          <div class="footer-bottom">
+          </div>
+        </footer>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const navButtons = document.querySelectorAll('.nav button');
+    const panels = document.querySelectorAll('.panel');
+    const openSidebar = document.getElementById('openSidebar');
+    const closeSidebar = document.getElementById('closeSidebar');
+
+    function showPanel(id) {
+      panels.forEach(panel => {
+        panel.classList.remove('active');
+        setTimeout(() => {
+          if (panel.id === id) panel.classList.add('active');
+        }, 120);
+      });
+
+      navButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.target === id));
+
+      if (window.innerWidth <= 920) {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('show');
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    navButtons.forEach(btn => {
+      btn.addEventListener('click', () => showPanel(btn.dataset.target));
+    });
+
+    openSidebar?.addEventListener('click', () => {
+      sidebar.classList.add('open');
+      overlay.classList.add('show');
+    });
+
+    closeSidebar?.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('show');
+    });
+
+    overlay.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('show');
+    });
+
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        const target = link.getAttribute('href').slice(1);
+        if (document.getElementById(target)) {
+          e.preventDefault();
+          showPanel(target);
+        }
+      });
+    });
+
+    // cinematic parallax portrait effect
+    const portrait = document.querySelector('.portrait-card');
+
+    if (portrait) {
+      window.addEventListener('pointermove', (e) => {
+        if (window.innerWidth <= 920) return;
+
+        const x = (e.clientX / window.innerWidth - 0.5) * 10;
+        const y = (e.clientY / window.innerHeight - 0.5) * 10;
+
+        portrait.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      });
+    }
+
+    // animated reveal system
+    const revealElements = document.querySelectorAll('.glass, .project-card, .research-card, .certificate-card, .reference-card, .contact-card');
+
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('reveal-visible');
+        }
+      });
+    }, {
+      threshold: 0.15
+    });
+
+    revealElements.forEach(el => {
+      el.classList.add('reveal-hidden');
+      revealObserver.observe(el);
+    });
+
+    // project modal interactions
+    const projectButtons = document.querySelectorAll('.project-btn');
+    const researchButtons = document.querySelectorAll('.research-btn');
+
+    projectButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        alert('Project modal system can be connected here with screenshots, videos, GitHub repositories, or detailed engineering explanations.');
+      });
+    });
+
+    researchButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        alert('Research PDF viewer / publication link system can be connected here.');
+      });
+    });
+
+    // animated electrical particles
+    const particleContainer = document.createElement('div');
+    particleContainer.className = 'particles';
+    document.body.appendChild(particleContainer);
+
+    for (let i = 0; i < 28; i++) {
+      const particle = document.createElement('span');
+      particle.className = 'particle';
+
+      particle.style.left = Math.random() * 100 + 'vw';
+      particle.style.animationDuration = (8 + Math.random() * 12) + 's';
+      particle.style.animationDelay = Math.random() * 8 + 's';
+      particle.style.opacity = Math.random() * 0.8;
+
+      particleContainer.appendChild(particle);
+    }
+
+    // futuristic loading animation
+    window.addEventListener('load', () => {
+      document.body.classList.add('loaded');
+    });
+
+    // custom cursor glow
+    const cursor = document.querySelector('.cursor-glow');
+
+    window.addEventListener('mousemove', (e) => {
+      if (!cursor) return;
+
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+    });
+
+    // interactive glow boost
+    document.querySelectorAll('button, a, .glass').forEach(item => {
+      item.addEventListener('mouseenter', () => {
+        if(cursor){
+          cursor.style.transform = 'translate(-50%, -50%) scale(1.9)';
+        }
+      });
+
+      item.addEventListener('mouseleave', () => {
+        if(cursor){
+          cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
